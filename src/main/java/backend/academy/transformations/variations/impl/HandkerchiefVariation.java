@@ -3,6 +3,9 @@ package backend.academy.transformations.variations.impl;
 import backend.academy.screen.Point;
 import backend.academy.transformations.variations.Variation;
 
+/**
+ * The class represents a Handkerchief variation (№6)
+ */
 public class HandkerchiefVariation implements Variation {
     @Override
     public Point apply(Point point) {

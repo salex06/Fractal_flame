@@ -3,6 +3,9 @@ package backend.academy.transformations.variations.impl;
 import backend.academy.screen.Point;
 import backend.academy.transformations.variations.Variation;
 
+/**
+ * The class represents a Spherical variation (№2)
+ */
 public class SphericalVariation implements Variation {
     @Override
     public Point apply(Point point) {

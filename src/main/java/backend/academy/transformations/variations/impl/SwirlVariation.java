@@ -3,6 +3,9 @@ package backend.academy.transformations.variations.impl;
 import backend.academy.screen.Point;
 import backend.academy.transformations.variations.Variation;
 
+/**
+ * The class represents a Swirl variation (№3)
+ */
 public class SwirlVariation implements Variation {
     @Override
     public Point apply(Point point) {
