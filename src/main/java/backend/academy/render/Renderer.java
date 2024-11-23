@@ -5,7 +5,6 @@ import backend.academy.image.Pixel;
 import backend.academy.processing.GammaCorrection;
 import backend.academy.processing.ImageProcessor;
 import backend.academy.screen.Point;
-import backend.academy.screen.Rect;
 import backend.academy.transformations.affine.AffineFunction;
 import backend.academy.transformations.affine.AffineService;
 import backend.academy.transformations.variations.Variation;
@@ -24,7 +23,6 @@ public class Renderer {
     public FractalImage render(
         int countAffines,
         FractalImage canvas,
-        Rect world,
         List<Variation> variations,
         int samples,
         short iterPerSample,

@@ -2,7 +2,6 @@ package backend.academy;
 
 import backend.academy.image.FractalImage;
 import backend.academy.render.Renderer;
-import backend.academy.screen.Rect;
 import backend.academy.transformations.variations.VariationService;
 import backend.academy.utils.ImageUtils;
 import java.io.IOException;
@@ -19,7 +18,6 @@ public class Main {
         FractalImage image = renderer.render(
             5,
             new FractalImage(1080, 1920),
-            new Rect(0, 0, 1920, 1080),
             VariationService.getVariationsList(),
             100_000,
             (short) 100,
