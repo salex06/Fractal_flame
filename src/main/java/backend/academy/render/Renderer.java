@@ -2,6 +2,8 @@ package backend.academy.render;
 
 import backend.academy.image.FractalImage;
 import backend.academy.image.Pixel;
+import backend.academy.processing.GammaCorrection;
+import backend.academy.processing.ImageProcessor;
 import backend.academy.screen.Point;
 import backend.academy.screen.Rect;
 import backend.academy.transformations.affine.AffineFunction;
@@ -25,7 +27,7 @@ public class Renderer {
         short iterPerSample,
         SecureRandom random
     ) {
-
+        ImageProcessor gammaCorrection = new GammaCorrection();
         List<AffineFunction> functions = AffineService.generateListOfAffineFunctions(countAffines);
         double xMin = XMIN_COEFF;
         double yMin = YMIN_COEFF;
@@ -67,6 +69,7 @@ public class Renderer {
                 }
             }
         }
+        gammaCorrection.process(canvas);
         return canvas;
     }
 
@@ -85,7 +88,7 @@ public class Renderer {
                 (pixel.color().getBlue() + function.color().getBlue()) / 2
             );
         }
-        return new Pixel(newColor, pixel.hitCount() + 1);
+        return new Pixel(newColor, pixel.hitCount() + 1, 0);
     }
 
     private static final int START_ITERATIONS = -20;

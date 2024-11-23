@@ -69,7 +69,7 @@ class ImageUtilsTest {
         int k = 0;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; ++j) {
-                pixels[i][j] = new Pixel(colors.get(k++), 0);
+                pixels[i][j] = new Pixel(colors.get(k++), 0, 0);
             }
         }
         FractalImage mockedImage = mock(FractalImage.class);

@@ -8,6 +8,7 @@ import java.awt.Color;
  * of "hits" in this pixel
  * @param color pixel color
  * @param hitCount the number of hits in a given pixel
+ * @param normal the brightness of the pixel
  */
-public record Pixel(Color color, int hitCount) {
+public record Pixel(Color color, int hitCount, double normal) {
 }

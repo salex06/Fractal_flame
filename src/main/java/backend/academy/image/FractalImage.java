@@ -13,7 +13,7 @@ public class FractalImage {
         data = new Pixel[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; ++j) {
-                data[i][j] = new Pixel(Color.BLACK, 0);
+                data[i][j] = new Pixel(Color.BLACK, 0, 0);
             }
         }
         this.width = width;
