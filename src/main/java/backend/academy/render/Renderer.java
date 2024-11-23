@@ -69,7 +69,7 @@ public class Renderer {
                             int x1 = xRes - (int) (((xMax - xRot) / ranx) * xRes);
                             int y1 = yRes - (int) (((yMax - yRot) / rany) * yRes);
 
-                            if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
+                            if (canvas.contains(x1, y1)) {
                                 Pixel pix = canvas.pixel(y1, x1);
                                 canvas.setPixel(y1, x1, calcNewPixel(pix, affine));
                             }
