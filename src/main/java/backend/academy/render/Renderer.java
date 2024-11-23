@@ -40,29 +40,27 @@ public class Renderer {
         double ranx = xMax - xMin;
         double rany = yMax - yMin;
         for (int num = 0; num < samples; ++num) {
-            double newX = random.nextDouble(XMIN_COEFF, XMAX_COEFF);
-            double newY = random.nextDouble(YMIN_COEFF, YMAX_COEFF);
-
-            Point pw = new Point(newX, newY); //получаем стартовую точку
+            Point pw = new Point(
+                random.nextDouble(XMIN_COEFF, XMAX_COEFF),
+                random.nextDouble(YMIN_COEFF, YMAX_COEFF)
+            ); //получаем стартовую точку
 
             for (short step = START_ITERATIONS; step < iterPerSample - START_ITERATIONS; ++step) {
                 Variation variation = variations.get(
                     random.nextInt(0, variations.size())
                 ); // получаем функцию преобразования
 
-                AffineFunction affine = functions.get(random.nextInt(countAffines));
-                pw = affine.doAffineTransformation(pw); //применяем аффинное преобразование
+                AffineFunction affine = functions.get(random.nextInt(countAffines)); //получаем аффинное преобразование
 
+                pw = affine.doAffineTransformation(pw); //применяем аффинное преобразование
                 pw = variation.apply(pw); //применяем функцию V преобразования к точке
-                newX = pw.x();
-                newY = pw.y();
 
                 if (step > 0) {
                     double theta = 0.0;
                     for (int s = 0; s < symmetry; s++) {
                         theta += ((2 * Math.PI) / symmetry);
-                        double xRot = newX * cos(theta) - newY * sin(theta);
-                        double yRot = newX * sin(theta) + newY * cos(theta);
+                        double xRot = pw.x() * cos(theta) - pw.y() * sin(theta);
+                        double yRot = pw.x() * sin(theta) + pw.y() * cos(theta);
                         if (xRot >= xMin && xRot <= xMax && yRot >= yMin && yRot <= yMax) {
                             int x1 = xRes - (int) (((xMax - xRot) / ranx) * xRes);
                             int y1 = yRes - (int) (((yMax - yRot) / rany) * yRes);
