@@ -23,6 +23,7 @@ public class Main {
             VariationService.getVariationsList(),
             100_000,
             (short) 100,
+            5,
             new SecureRandom()
         );
         ImageUtils.save(image, Path.of("src/main/resources/out.png"), PNG);

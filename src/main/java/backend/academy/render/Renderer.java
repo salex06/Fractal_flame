@@ -16,7 +16,10 @@ import static backend.academy.image.FractalImage.XMAX_COEFF;
 import static backend.academy.image.FractalImage.XMIN_COEFF;
 import static backend.academy.image.FractalImage.YMAX_COEFF;
 import static backend.academy.image.FractalImage.YMIN_COEFF;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
+@SuppressWarnings("ParameterNumber")
 public class Renderer {
     public FractalImage render(
         int countAffines,
@@ -25,6 +28,7 @@ public class Renderer {
         List<Variation> variations,
         int samples,
         short iterPerSample,
+        int symmetry,
         SecureRandom random
     ) {
         ImageProcessor gammaCorrection = new GammaCorrection();
@@ -56,14 +60,19 @@ public class Renderer {
                 newY = pw.y();
 
                 if (step > 0) {
-                    Pixel pix;
-                    if (newX >= xMin && newX <= xMax && newY >= yMin && newY <= yMax) {
-                        int x1 = xRes - (int) (((xMax - newX) / ranx) * xRes);
-                        int y1 = yRes - (int) (((yMax - newY) / rany) * yRes);
+                    double theta = 0.0;
+                    for (int s = 0; s < symmetry; s++) {
+                        theta += ((2 * Math.PI) / symmetry);
+                        double xRot = newX * cos(theta) - newY * sin(theta);
+                        double yRot = newX * sin(theta) + newY * cos(theta);
+                        if (xRot >= xMin && xRot <= xMax && yRot >= yMin && yRot <= yMax) {
+                            int x1 = xRes - (int) (((xMax - xRot) / ranx) * xRes);
+                            int y1 = yRes - (int) (((yMax - yRot) / rany) * yRes);
 
-                        if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
-                            pix = canvas.pixel(y1, x1);
-                            canvas.setPixel(y1, x1, calcNewPixel(pix, affine));
+                            if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
+                                Pixel pix = canvas.pixel(y1, x1);
+                                canvas.setPixel(y1, x1, calcNewPixel(pix, affine));
+                            }
                         }
                     }
                 }
