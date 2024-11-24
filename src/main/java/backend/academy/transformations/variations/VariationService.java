@@ -29,4 +29,20 @@ public final class VariationService {
     public static List<Variation> getVariationsList() {
         return VARIATIONS;
     }
+
+    /**
+     * Returns the list of available variations in the form of string
+     *
+     * @return {@code String} - available variations
+     */
+    public static String getVariationsListAsString() {
+        StringBuilder builder = new StringBuilder();
+        int index = 1;
+        for (Variation variation : VARIATIONS) {
+            builder.append('[').append(index++).append("] - ").append(
+                    variation.getClass().getSimpleName())
+                .append('\n');
+        }
+        return builder.toString();
+    }
 }
