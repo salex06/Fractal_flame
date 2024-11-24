@@ -1,11 +1,23 @@
 package backend.academy.format;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The enumeration defines the file extension
  * where the fractal image will be saved
  */
 public enum ImageFormat {
     BMP, PNG;
+
+    /**
+     * Returns the list of available file formats
+     *
+     * @return list of available file formats
+     */
+    public static List<ImageFormat> getImageFormats() {
+        return Arrays.stream(ImageFormat.values()).toList();
+    }
 
     /**
      * Returns available file formats in the form of string
