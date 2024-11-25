@@ -28,28 +28,24 @@ public class FractalApplication implements Application {
     @Override
     public void run() throws IOException {
         ioHandler.write("-Конфигурация изображения-\n");
-        ioHandler.write("Введите ширину изображения: ");
-        int width = Integer.parseUnsignedInt(ioHandler.read());
-        ioHandler.write("Введите высоту изображения: ");
-        int height = Integer.parseUnsignedInt(ioHandler.read());
 
-        ioHandler.write("Укажите количество аффинных преобразований: ");
-        int affinesCount = Integer.parseUnsignedInt(ioHandler.read());
+        Integer width = setPositiveIntegerValue("ширина");
+
+        Integer height = setPositiveIntegerValue("высота");
+
+        Integer affinesCount = setPositiveIntegerValue("количество аффинных преобразований");
 
         List<Variation> variationList = selectVariations().stream().toList();
 
-        ioHandler.write("Введите количество сэмплов: ");
-        int samples = Integer.parseUnsignedInt(ioHandler.read());
+        Integer samples = setPositiveIntegerValue("количество сэмплов");
 
-        ioHandler.write("Введите количество итераций на сэмпл: ");
-        short itersPerSample = Short.parseShort(ioHandler.read());
+        Integer itersPerSample = setPositiveIntegerValue("количество итераций на сэмпл");
 
-        ioHandler.write("Укажите количество осей симметрии: ");
-        int symmetry = Integer.parseUnsignedInt(ioHandler.read());
+        Integer symmetry = setPositiveIntegerValue("количество осей симметрии");
 
         ImageFormat format = selectFormat();
 
-        showConfig(width, height, affinesCount, variationList, samples, itersPerSample, symmetry, format);
+        showConfig(width, height, affinesCount, variationList, samples, itersPerSample.shortValue(), symmetry, format);
 
         ioHandler.write("Генерация изображения начата...\n");
         FractalImage image = renderer.render(
@@ -57,7 +53,7 @@ public class FractalApplication implements Application {
             new FractalImage(height, width),
             variationList,
             samples,
-            itersPerSample,
+            itersPerSample.shortValue(),
             symmetry,
             new SecureRandom()
         );
@@ -65,6 +61,24 @@ public class FractalApplication implements Application {
         ImageUtils.save(image, Path.of("src/main/resources/out." + format.name().toLowerCase()), format);
 
         ioHandler.write("Генерация изображения завершена!\n");
+    }
+
+    private Integer setPositiveIntegerValue(String parameter) throws IOException {
+        Integer value = null;
+        while (value == null) {
+            ioHandler.write("Введите значение параметра '" + parameter + "': ");
+            try {
+                int temp = Integer.parseInt(ioHandler.read());
+                if (temp < 1) {
+                    ioHandler.write("Значение должно быть больше 0\n");
+                } else {
+                    value = temp;
+                }
+            } catch (NumberFormatException e) {
+                ioHandler.write("Необходимо ввести целочисленное значение!\n");
+            }
+        }
+        return value;
     }
 
     private Set<Variation> selectVariations() throws IOException {
@@ -76,8 +90,8 @@ public class FractalApplication implements Application {
         int q;
         char command = 'y';
         do {
-            ioHandler.write("Выберите вариацию: ");
-            q = Integer.parseInt(ioHandler.read());
+            ioHandler.write("Выберите вариацию\n");
+            q = setPositiveIntegerValue("номер вариации");
             if (q <= 0 || q > available.size()) {
                 ioHandler.write("Неверный номер вариации!\n");
             } else if (selected.contains(available.get(q - 1))) {
@@ -96,11 +110,17 @@ public class FractalApplication implements Application {
     }
 
     private ImageFormat selectFormat() throws IOException {
+        String parameterName = "номер формата";
         ioHandler.write("Доступные форматы: \n");
         ioHandler.write(ImageFormat.getImageFormatsAsStrings());
         List<ImageFormat> available = ImageFormat.getImageFormats();
-        ioHandler.write("Введите номер формата файла: ");
-        return available.get(Integer.parseInt(ioHandler.read()) - 1);
+        ioHandler.write("Выберите формат файла\n");
+        int formatNumber = setPositiveIntegerValue(parameterName);
+        while (formatNumber <= 0 || formatNumber > available.size()) {
+            ioHandler.write("Неверный номер формата! Повторите ввод!\n");
+            formatNumber = setPositiveIntegerValue(parameterName);
+        }
+        return available.get(formatNumber - 1);
     }
 
     @SuppressWarnings("ParameterNumber")
