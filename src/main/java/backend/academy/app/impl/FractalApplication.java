@@ -58,6 +58,7 @@ public class FractalApplication implements Application {
         ioHandler.write(config);
 
         ioHandler.write("Генерация изображения начата...\n");
+        long start = System.nanoTime();
         FractalImage image = renderer.render(
             affinesCount,
             new FractalImage(height, width),
@@ -67,6 +68,7 @@ public class FractalApplication implements Application {
             symmetry,
             new SecureRandom()
         );
+        long elapsedTime = System.nanoTime() - start;
 
         File dir =
             new File("src/main/resources/",
@@ -82,6 +84,7 @@ public class FractalApplication implements Application {
 
         IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
         fileHandler.write(config);
+        fileHandler.write("Затраченное время (в секундах): " + elapsedTime / NANOSECONDS_IN_SECOND + '\n');
 
         ioHandler.write("Генерация изображения завершена!\n");
     }
@@ -172,4 +175,5 @@ public class FractalApplication implements Application {
         return config.toString();
     }
 
+    private static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
 }
