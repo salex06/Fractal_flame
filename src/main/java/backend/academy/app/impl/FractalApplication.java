@@ -47,7 +47,11 @@ public class FractalApplication implements Application {
 
         ImageFormat format = selectFormat();
 
-        showConfig(width, height, affinesCount, variationList, samples, itersPerSample.shortValue(), symmetry, format);
+        ioHandler.write("-Итоговая конфигурация изображения-\n");
+        String config =
+            getConfig(width, height, affinesCount, variationList, samples, itersPerSample.shortValue(), symmetry,
+                format);
+        ioHandler.write(config);
 
         ioHandler.write("Генерация изображения начата...\n");
         FractalImage image = renderer.render(
@@ -131,7 +135,7 @@ public class FractalApplication implements Application {
     }
 
     @SuppressWarnings("ParameterNumber")
-    private void showConfig(
+    private String getConfig(
         int width,
         int height,
         int affineCount,
@@ -140,18 +144,19 @@ public class FractalApplication implements Application {
         short iterPerSamples,
         int symmetry,
         ImageFormat imageFormat
-    ) throws IOException {
-        ioHandler.write("-Текущая конфигурация-\n");
-        ioHandler.write("Ширина изображения: " + width + '\n');
-        ioHandler.write("Высота изображения: " + height + '\n');
-        ioHandler.write("Количество аффинных преобразований: " + affineCount + '\n');
-        ioHandler.write("Выбранные вариации: \n");
+    ) {
+        StringBuilder config = new StringBuilder();
+        config.append("Ширина изображения: ").append(width).append('\n');
+        config.append("Высота изображения: ").append(height).append('\n');
+        config.append("Количество аффинных преобразований: ").append(affineCount).append('\n');
+        config.append("Выбранные вариации: \n");
         for (Variation variation : variations) {
-            ioHandler.write('\t' + variation.getClass().getSimpleName() + '\n');
+            config.append('\t').append(variation.getClass().getSimpleName()).append('\n');
         }
-        ioHandler.write("Количество сэмплов: " + samples + '\n');
-        ioHandler.write("Количество итераций на сэмпл: " + iterPerSamples + '\n');
-        ioHandler.write("Количество осей симметрии: " + symmetry + '\n');
-        ioHandler.write("Формат файла: " + imageFormat.name() + '\n');
+        config.append("Количество сэмплов: ").append(samples).append('\n');
+        config.append("Количество итераций на сэмпл: ").append(iterPerSamples).append('\n');
+        config.append("Количество осей симметрии: ").append(symmetry).append('\n');
+        config.append("Формат файла: ").append(imageFormat.name()).append('\n');
+        return config.toString();
     }
 }
