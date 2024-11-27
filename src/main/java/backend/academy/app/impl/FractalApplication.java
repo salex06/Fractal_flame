@@ -9,6 +9,8 @@ import backend.academy.transformations.variations.VariationService;
 import backend.academy.utils.IOHandler;
 import backend.academy.utils.ImageUtils;
 import backend.academy.utils.impl.IOHandlerImpl;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.SecureRandom;
@@ -28,6 +30,7 @@ public class FractalApplication implements Application {
     }
 
     @Override
+    @SuppressFBWarnings("PATH_TRAVERSAL_IN")
     public void run() throws IOException {
         ioHandler.write("-Конфигурация изображения-\n");
 
@@ -64,12 +67,16 @@ public class FractalApplication implements Application {
             new SecureRandom()
         );
 
-        String pathAsString =
-            "src/main/resources/"
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss"))
-                + "." + format.name().toLowerCase();
+        File dir =
+            new File("src/main/resources/",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss")));
+        if (!dir.mkdir()) {
+            ioHandler.write("Ошибка создания директории");
+            return;
+        }
+        String imagePath = dir + "/image." + format.name().toLowerCase();
 
-        ImageUtils.save(image, Path.of(pathAsString), format);
+        ImageUtils.save(image, Path.of(imagePath), format);
 
         ioHandler.write("Генерация изображения завершена!\n");
     }
@@ -159,4 +166,5 @@ public class FractalApplication implements Application {
         config.append("Формат файла: ").append(imageFormat.name()).append('\n');
         return config.toString();
     }
+
 }
