@@ -12,6 +12,7 @@ import backend.academy.utils.impl.IOHandlerImpl;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class FractalApplication implements Application {
     }
 
     @Override
-    @SuppressFBWarnings("PATH_TRAVERSAL_IN")
+    @SuppressFBWarnings({"PATH_TRAVERSAL_IN", "PATH_TRAVERSAL_OUT"})
     public void run() throws IOException {
         ioHandler.write("-Конфигурация изображения-\n");
 
@@ -75,8 +76,12 @@ public class FractalApplication implements Application {
             return;
         }
         String imagePath = dir + "/image." + format.name().toLowerCase();
+        String logPath = dir + "/info.log";
 
         ImageUtils.save(image, Path.of(imagePath), format);
+
+        IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
+        fileHandler.write(config);
 
         ioHandler.write("Генерация изображения завершена!\n");
     }
