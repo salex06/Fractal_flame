@@ -31,7 +31,6 @@ public class FractalApplication implements Application {
     }
 
     @Override
-    @SuppressFBWarnings({"PATH_TRAVERSAL_IN", "PATH_TRAVERSAL_OUT"})
     public void run() throws IOException {
         ioHandler.write("-Конфигурация изображения-\n");
 
@@ -70,23 +69,27 @@ public class FractalApplication implements Application {
         );
         long elapsedTime = System.nanoTime() - start;
 
+        saveData(image, config, format, elapsedTime);
+
+        ioHandler.write("Генерация изображения завершена!\n");
+    }
+
+    @SuppressFBWarnings({"PATH_TRAVERSAL_IN", "PATH_TRAVERSAL_OUT"})
+    private void saveData(FractalImage image, String config, ImageFormat format, long elapsedTime) throws IOException {
         File dir =
-            new File("src/main/resources/",
+            new File(PATH_TO_ROOT_DIR,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss")));
         if (!dir.mkdir()) {
             ioHandler.write("Ошибка создания директории");
             return;
         }
-        String imagePath = dir + "/image." + format.name().toLowerCase();
         String logPath = dir + "/info.log";
-
-        ImageUtils.save(image, Path.of(imagePath), format);
-
         IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
         fileHandler.write(config);
         fileHandler.write("Затраченное время (в секундах): " + elapsedTime / NANOSECONDS_IN_SECOND + '\n');
 
-        ioHandler.write("Генерация изображения завершена!\n");
+        String imagePath = dir + "/image." + format.name().toLowerCase();
+        ImageUtils.save(image, Path.of(imagePath), format);
     }
 
     private Integer setPositiveIntegerValue(String parameter) throws IOException {
@@ -176,4 +179,5 @@ public class FractalApplication implements Application {
     }
 
     private static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
+    private static final String PATH_TO_ROOT_DIR = "src/main/resources/";
 }
