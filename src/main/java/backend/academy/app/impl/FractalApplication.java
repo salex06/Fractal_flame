@@ -12,6 +12,8 @@ import backend.academy.utils.impl.IOHandlerImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +60,12 @@ public class FractalApplication implements Application {
             new SecureRandom()
         );
 
-        ImageUtils.save(image, Path.of("src/main/resources/out." + format.name().toLowerCase()), format);
+        String pathAsString =
+            "src/main/resources/"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss"))
+                + "." + format.name().toLowerCase();
+
+        ImageUtils.save(image, Path.of(pathAsString), format);
 
         ioHandler.write("Генерация изображения завершена!\n");
     }
