@@ -2,6 +2,7 @@ package backend.academy.transformations.variations;
 
 import backend.academy.screen.Point;
 import backend.academy.transformations.variations.impl.BentVariation;
+import backend.academy.transformations.variations.impl.DiscVariation;
 import backend.academy.transformations.variations.impl.HandkerchiefVariation;
 import backend.academy.transformations.variations.impl.SinusoidalVariation;
 import backend.academy.transformations.variations.impl.SphericalVariation;
@@ -33,7 +34,10 @@ class VariationTest {
             Map.entry(new BentVariation(), List.of(1.0, 1.2, 1.0, 1.2)),
             Map.entry(new BentVariation(), List.of(-0.5, 1.0, -1.0, 1.0)),
             Map.entry(new BentVariation(), List.of(1.4, -0.8, 1.4, -0.4)),
-            Map.entry(new BentVariation(), List.of(-0.7, -1.2, -1.4, -0.6))
+            Map.entry(new BentVariation(), List.of(-0.7, -1.2, -1.4, -0.6)),
+            Map.entry(new DiscVariation(), List.of(1.0, 1.2, -0.2735764087, 0.05401572387)),
+            Map.entry(new DiscVariation(), List.of(-0.5, 1.0, -0.23466, -0.60356)),
+            Map.entry(new DiscVariation(), List.of(1.4, -0.8, 0.155044, -0.057172))
         );
     }
 

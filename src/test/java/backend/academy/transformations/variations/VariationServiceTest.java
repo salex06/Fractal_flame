@@ -1,6 +1,7 @@
 package backend.academy.transformations.variations;
 
 import backend.academy.transformations.variations.impl.BentVariation;
+import backend.academy.transformations.variations.impl.DiscVariation;
 import backend.academy.transformations.variations.impl.HandkerchiefVariation;
 import backend.academy.transformations.variations.impl.SinusoidalVariation;
 import backend.academy.transformations.variations.impl.SphericalVariation;
@@ -19,7 +20,8 @@ class VariationServiceTest {
             new SinusoidalVariation(),
             new SphericalVariation(),
             new SwirlVariation(),
-            new BentVariation()
+            new BentVariation(),
+            new DiscVariation()
         );
 
         List<Variation> actual = VariationService.getVariationsList();
@@ -39,6 +41,7 @@ class VariationServiceTest {
             [3] - SphericalVariation
             [4] - SwirlVariation
             [5] - BentVariation
+            [6] - DiscVariation
             """;
 
         String actual = VariationService.getVariationsListAsString();
