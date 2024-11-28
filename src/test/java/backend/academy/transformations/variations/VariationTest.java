@@ -1,6 +1,7 @@
 package backend.academy.transformations.variations;
 
 import backend.academy.screen.Point;
+import backend.academy.transformations.variations.impl.BentVariation;
 import backend.academy.transformations.variations.impl.HandkerchiefVariation;
 import backend.academy.transformations.variations.impl.SinusoidalVariation;
 import backend.academy.transformations.variations.impl.SphericalVariation;
@@ -28,8 +29,11 @@ class VariationTest {
             Map.entry(new SwirlVariation(), List.of(-1.1, -1.7, -0.07709, 2.023377)),
             Map.entry(new HandkerchiefVariation(), List.of(1.0, 1.0, 1.14370, 1.14370)),
             Map.entry(new HandkerchiefVariation(), List.of(0.5, 0.1, 0.3313250734, 0.4852053516)),
-            Map.entry(new HandkerchiefVariation(), List.of(1.5, -0.8, 1.590572811, -0.9865985898))
-
+            Map.entry(new HandkerchiefVariation(), List.of(1.5, -0.8, 1.590572811, -0.9865985898)),
+            Map.entry(new BentVariation(), List.of(1.0, 1.2, 1.0, 1.2)),
+            Map.entry(new BentVariation(), List.of(-0.5, 1.0, -1.0, 1.0)),
+            Map.entry(new BentVariation(), List.of(1.4, -0.8, 1.4, -0.4)),
+            Map.entry(new BentVariation(), List.of(-0.7, -1.2, -1.4, -0.6))
         );
     }
 

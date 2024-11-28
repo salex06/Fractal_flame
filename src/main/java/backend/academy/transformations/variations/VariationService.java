@@ -1,5 +1,6 @@
 package backend.academy.transformations.variations;
 
+import backend.academy.transformations.variations.impl.BentVariation;
 import backend.academy.transformations.variations.impl.HandkerchiefVariation;
 import backend.academy.transformations.variations.impl.SinusoidalVariation;
 import backend.academy.transformations.variations.impl.SphericalVariation;
@@ -18,7 +19,8 @@ public final class VariationService {
         new HandkerchiefVariation(),
         new SinusoidalVariation(),
         new SphericalVariation(),
-        new SwirlVariation()
+        new SwirlVariation(),
+        new BentVariation()
     );
 
     /**
