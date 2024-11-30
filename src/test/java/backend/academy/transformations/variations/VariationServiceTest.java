@@ -7,9 +7,14 @@ import backend.academy.transformations.variations.impl.SinusoidalVariation;
 import backend.academy.transformations.variations.impl.SphericalVariation;
 import backend.academy.transformations.variations.impl.SwirlVariation;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class VariationServiceTest {
     @Test
@@ -36,16 +41,50 @@ class VariationServiceTest {
     @DisplayName("Ensure getVariationsListAsString works")
     void ensureGetVariationsListAsStringWorks() {
         String expected = """
-            [1] - HandkerchiefVariation
-            [2] - SinusoidalVariation
-            [3] - SphericalVariation
-            [4] - SwirlVariation
-            [5] - BentVariation
-            [6] - DiscVariation
+            [1] - Handkerchief
+            [2] - Sinusoidal
+            [3] - Spherical
+            [4] - Swirl
+            [5] - Bent
+            [6] - Disc
             """;
 
         String actual = VariationService.getVariationsListAsString();
 
         assertEquals(expected, actual);
+    }
+
+    private static List<Map.Entry<String, Variation>> data() {
+        return List.of(
+            Map.entry("Handkerchief", new HandkerchiefVariation()),
+            Map.entry("Sinusoidal", new SinusoidalVariation()),
+            Map.entry("Spherical", new SphericalVariation()),
+            Map.entry("Swirl", new SwirlVariation()),
+            Map.entry("Bent", new BentVariation()),
+            Map.entry("Disc", new DiscVariation())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    @DisplayName("Ensure getVariationByName works (correct name)")
+    void ensureGetVariationByNameWorks_correctName(Map.Entry<String, Variation> current) {
+        String name = current.getKey();
+        Variation expected = current.getValue();
+
+        Variation actual = VariationService.getVariationByName(name);
+
+        assertNotNull(actual);
+        assertEquals(expected.getClass(), actual.getClass());
+    }
+
+    @Test
+    @DisplayName("Ensure getVariationByName works (incorrect name)")
+    void ensureGetVariationByNameWorks_incorrectName() {
+        String name = "wrongVariation";
+
+        Variation actual = VariationService.getVariationByName(name);
+
+        assertNull(actual);
     }
 }
