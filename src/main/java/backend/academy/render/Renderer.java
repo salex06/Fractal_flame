@@ -8,9 +8,12 @@ import backend.academy.screen.Point;
 import backend.academy.transformations.affine.AffineFunction;
 import backend.academy.transformations.affine.AffineService;
 import backend.academy.transformations.variations.Variation;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Color;
-import java.security.SecureRandom;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import static backend.academy.image.FractalImage.XMAX_COEFF;
 import static backend.academy.image.FractalImage.XMIN_COEFF;
 import static backend.academy.image.FractalImage.YMAX_COEFF;
@@ -18,7 +21,6 @@ import static backend.academy.image.FractalImage.YMIN_COEFF;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-@SuppressWarnings("ParameterNumber")
 public class Renderer {
     public FractalImage render(
         int countAffines,
@@ -27,55 +29,65 @@ public class Renderer {
         int samples,
         short iterPerSample,
         int symmetry,
-        SecureRandom random
+        int threadsNumber
     ) {
         ImageProcessor gammaCorrection = new GammaCorrection();
         List<AffineFunction> functions = AffineService.generateListOfAffineFunctions(countAffines);
-        double xMin = XMIN_COEFF;
-        double yMin = YMIN_COEFF;
-        double yMax = YMAX_COEFF;
-        double xMax = XMAX_COEFF;
-        int xRes = canvas.width();
-        int yRes = canvas.height();
-        double ranx = xMax - xMin;
-        double rany = yMax - yMin;
-        for (int num = 0; num < samples; ++num) {
-            Point pw = new Point(
-                random.nextDouble(XMIN_COEFF, XMAX_COEFF),
-                random.nextDouble(YMIN_COEFF, YMAX_COEFF)
-            ); //получаем стартовую точку
+        try (ExecutorService executorService = Executors.newFixedThreadPool(threadsNumber)) {
+            for (int num = 0; num < samples; ++num) {
+                executorService.execute(
+                    () -> processSample(iterPerSample, variations, functions, countAffines, symmetry, canvas));
+            }
+        }
+        gammaCorrection.process(canvas);
+        return canvas;
+    }
 
-            for (short step = START_ITERATIONS; step < iterPerSample - START_ITERATIONS; ++step) {
-                Variation variation = variations.get(
-                    random.nextInt(0, variations.size())
-                ); // получаем функцию преобразования
+    @SuppressFBWarnings("PREDICTABLE_RANDOM")
+    private void processSample(
+        int iterPerSample,
+        List<Variation> variations,
+        List<AffineFunction> functions,
+        int countAffines,
+        int symmetry,
+        FractalImage canvas
+    ) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Point pw = new Point(
+            random.nextDouble(XMIN_COEFF, XMAX_COEFF),
+            random.nextDouble(YMIN_COEFF, YMAX_COEFF)
+        ); //получаем стартовую точку
 
-                AffineFunction affine = functions.get(random.nextInt(countAffines)); //получаем аффинное преобразование
+        for (short step = START_ITERATIONS; step < iterPerSample - START_ITERATIONS; ++step) {
+            Variation variation = variations.get(
+                random.nextInt(0, variations.size())
+            ); // получаем функцию преобразования
 
-                pw = affine.doAffineTransformation(pw); //применяем аффинное преобразование
-                pw = variation.apply(pw); //применяем функцию V преобразования к точке
+            AffineFunction affine = functions.get(random.nextInt(countAffines)); //получаем аффинное преобразование
 
-                if (step > 0) {
-                    double theta = 0.0;
-                    for (int s = 0; s < symmetry; s++) {
-                        theta += ((2 * Math.PI) / symmetry);
-                        double xRot = pw.x() * cos(theta) - pw.y() * sin(theta);
-                        double yRot = pw.x() * sin(theta) + pw.y() * cos(theta);
-                        if (xRot >= xMin && xRot <= xMax && yRot >= yMin && yRot <= yMax) {
-                            int x1 = xRes - (int) (((xMax - xRot) / ranx) * xRes);
-                            int y1 = yRes - (int) (((yMax - yRot) / rany) * yRes);
+            pw = affine.doAffineTransformation(pw); //применяем аффинное преобразование
+            pw = variation.apply(pw); //применяем функцию V преобразования к точке
 
-                            if (canvas.contains(x1, y1)) {
-                                Pixel pix = canvas.pixel(y1, x1);
-                                canvas.setPixel(y1, x1, calcNewPixel(pix, affine));
-                            }
+            if (step > 0) {
+                double theta = 0.0;
+                for (int s = 0; s < symmetry; s++) {
+                    theta += ((2 * Math.PI) / symmetry);
+                    double xRot = pw.x() * cos(theta) - pw.y() * sin(theta);
+                    double yRot = pw.x() * sin(theta) + pw.y() * cos(theta);
+                    if (xRot >= XMIN_COEFF && xRot <= XMAX_COEFF && yRot >= YMIN_COEFF && yRot <= YMAX_COEFF) {
+                        int x1 = canvas.width()
+                            - (int) (((XMAX_COEFF - xRot) / (XMAX_COEFF - XMIN_COEFF)) * canvas.width());
+                        int y1 = canvas.height()
+                            - (int) (((YMAX_COEFF - yRot) / (YMAX_COEFF - YMIN_COEFF)) * canvas.height());
+
+                        if (canvas.contains(x1, y1)) {
+                            Pixel pix = canvas.pixel(y1, x1);
+                            canvas.setPixel(y1, x1, calcNewPixel(pix, affine));
                         }
                     }
                 }
             }
         }
-        gammaCorrection.process(canvas);
-        return canvas;
     }
 
     private Pixel calcNewPixel(Pixel pixel, AffineFunction function) {

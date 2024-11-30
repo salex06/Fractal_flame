@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -48,12 +47,14 @@ public class FractalApplication implements Application {
 
         Integer symmetry = setPositiveIntegerValue("количество осей симметрии");
 
+        Integer threadNumber = setPositiveIntegerValue("количество потоков");
+
         ImageFormat format = selectFormat();
 
         ioHandler.write("-Итоговая конфигурация изображения-\n");
         String config =
             getConfig(width, height, affinesCount, variationList, samples, itersPerSample.shortValue(), symmetry,
-                format);
+                threadNumber, format);
         ioHandler.write(config);
 
         ioHandler.write("Генерация изображения начата...\n");
@@ -65,7 +66,7 @@ public class FractalApplication implements Application {
             samples,
             itersPerSample.shortValue(),
             symmetry,
-            new SecureRandom()
+            threadNumber
         );
         long elapsedTime = System.nanoTime() - start;
 
@@ -161,6 +162,7 @@ public class FractalApplication implements Application {
         int samples,
         short iterPerSamples,
         int symmetry,
+        int threadNumber,
         ImageFormat imageFormat
     ) {
         StringBuilder config = new StringBuilder();
@@ -174,6 +176,7 @@ public class FractalApplication implements Application {
         config.append("Количество сэмплов: ").append(samples).append('\n');
         config.append("Количество итераций на сэмпл: ").append(iterPerSamples).append('\n');
         config.append("Количество осей симметрии: ").append(symmetry).append('\n');
+        config.append("Количество потоков: ").append(threadNumber).append('\n');
         config.append("Формат файла: ").append(imageFormat.name()).append('\n');
         return config.toString();
     }
