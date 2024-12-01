@@ -1,14 +1,15 @@
 package backend.academy.app.impl;
 
 import backend.academy.app.Application;
+import backend.academy.cli.CliParams;
 import backend.academy.format.ImageFormat;
 import backend.academy.image.FractalImage;
 import backend.academy.render.Renderer;
 import backend.academy.transformations.variations.Variation;
-import backend.academy.transformations.variations.VariationService;
 import backend.academy.utils.IOHandler;
 import backend.academy.utils.ImageUtils;
 import backend.academy.utils.impl.IOHandlerImpl;
+import com.beust.jcommander.JCommander;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
@@ -16,9 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class FractalApplication implements Application {
     private final IOHandler ioHandler;
@@ -30,48 +29,65 @@ public class FractalApplication implements Application {
     }
 
     @Override
-    public void run() throws IOException {
-        ioHandler.write("-Конфигурация изображения-\n");
+    public void run(String[] args) throws IOException {
+        CliParams cliParams = new CliParams();
+        JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
-        Integer width = setPositiveIntegerValue("ширина");
+        int width = cliParams.width();
+        int height = cliParams.height();
+        int affinesNumber = cliParams.affinesNumber();
+        List<Variation> variations = cliParams.variations();
+        int samples = cliParams.samplesNumber();
+        int itersPerSample = cliParams.iterPerSample();
+        int symmetry = cliParams.symmetry();
+        ImageFormat format = cliParams.imageFormat();
+        int threadNumber = cliParams.threadsNumber();
 
-        Integer height = setPositiveIntegerValue("высота");
+        if (cliParams.useOneThread()) {
+            String config =
+                getConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample, symmetry,
+                    1, format);
+            processGeneration(affinesNumber, new FractalImage(height, width), variations, samples,
+                (short) itersPerSample,
+                symmetry, 1, config, format);
+        }
+        if (cliParams.threadsNumber() > 1) {
+            String config =
+                getConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample, symmetry,
+                    threadNumber, format);
+            processGeneration(affinesNumber, new FractalImage(height, width), variations, samples,
+                (short) itersPerSample,
+                symmetry, threadNumber, config, format);
+        }
 
-        Integer affinesCount = setPositiveIntegerValue("количество аффинных преобразований");
+    }
 
-        List<Variation> variationList = selectVariations().stream().toList();
-
-        Integer samples = setPositiveIntegerValue("количество сэмплов");
-
-        Integer itersPerSample = setPositiveIntegerValue("количество итераций на сэмпл");
-
-        Integer symmetry = setPositiveIntegerValue("количество осей симметрии");
-
-        Integer threadNumber = setPositiveIntegerValue("количество потоков");
-
-        ImageFormat format = selectFormat();
-
-        ioHandler.write("-Итоговая конфигурация изображения-\n");
-        String config =
-            getConfig(width, height, affinesCount, variationList, samples, itersPerSample.shortValue(), symmetry,
-                threadNumber, format);
-        ioHandler.write(config);
-
-        ioHandler.write("Генерация изображения начата...\n");
+    @SuppressWarnings("ParameterNumber")
+    private void processGeneration(
+        int affinesNumber,
+        FractalImage fractalImage,
+        List<Variation> variations,
+        int samples,
+        short itersPerSample,
+        int symmetry,
+        int threadNumber,
+        String config,
+        ImageFormat format
+    ) throws IOException {
+        ioHandler.write("Генерация изображения начата... [" + threadNumber + " потоков]\n");
         long start = System.nanoTime();
         FractalImage image = renderer.render(
-            affinesCount,
-            new FractalImage(height, width),
-            variationList,
+            affinesNumber,
+            new FractalImage(fractalImage.height(), fractalImage.width()),
+            variations,
             samples,
-            itersPerSample.shortValue(),
+            itersPerSample,
             symmetry,
             threadNumber
         );
         long elapsedTime = System.nanoTime() - start;
 
         saveData(image, config, format, elapsedTime);
-
         ioHandler.write("Генерация изображения завершена!\n");
     }
 
@@ -91,66 +107,6 @@ public class FractalApplication implements Application {
 
         String imagePath = dir + "/image." + format.name().toLowerCase();
         ImageUtils.save(image, Path.of(imagePath), format);
-    }
-
-    private Integer setPositiveIntegerValue(String parameter) throws IOException {
-        Integer value = null;
-        while (value == null) {
-            ioHandler.write("Введите значение параметра '" + parameter + "': ");
-            try {
-                int temp = Integer.parseInt(ioHandler.read());
-                if (temp < 1) {
-                    ioHandler.write("Значение должно быть больше 0\n");
-                } else {
-                    value = temp;
-                }
-            } catch (NumberFormatException e) {
-                ioHandler.write("Необходимо ввести целочисленное значение!\n");
-            }
-        }
-        return value;
-    }
-
-    private Set<Variation> selectVariations() throws IOException {
-        ioHandler.write("Доступные вариации: \n");
-        ioHandler.write(VariationService.getVariationsListAsString());
-
-        List<Variation> available = VariationService.getVariationsList();
-        Set<Variation> selected = new HashSet<>();
-        int q;
-        char command = 'y';
-        do {
-            ioHandler.write("Выберите вариацию\n");
-            q = setPositiveIntegerValue("номер вариации");
-            if (q <= 0 || q > available.size()) {
-                ioHandler.write("Неверный номер вариации!\n");
-            } else if (selected.contains(available.get(q - 1))) {
-                ioHandler.write("Вариация уже была выбрана!\n");
-            } else {
-                selected.add(available.get(q - 1));
-            }
-
-            if (!selected.isEmpty()) {
-                ioHandler.write("Продолжить выбор вариаций? (y/n) ");
-                command = ioHandler.read().charAt(0);
-            }
-        } while (command == 'y');
-
-        return selected;
-    }
-
-    private ImageFormat selectFormat() throws IOException {
-        String parameterName = "номер формата";
-        ioHandler.write("Доступные форматы: \n");
-        ioHandler.write(ImageFormat.getImageFormatsAsStrings());
-        List<ImageFormat> available = ImageFormat.getImageFormats();
-        ioHandler.write("Выберите формат файла\n");
-        int formatNumber = setPositiveIntegerValue(parameterName);
-        while (formatNumber <= 0 || formatNumber > available.size()) {
-            ioHandler.write("Неверный номер формата! Повторите ввод!\n");
-            formatNumber = setPositiveIntegerValue(parameterName);
-        }
-        return available.get(formatNumber - 1);
     }
 
     @SuppressWarnings("ParameterNumber")

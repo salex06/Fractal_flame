@@ -9,7 +9,7 @@ import lombok.experimental.UtilityClass;
 public class Main {
     public static void main(String[] args) throws IOException {
         Application application = new FractalApplication();
-        application.run();
+        application.run(args);
     }
 }
 
