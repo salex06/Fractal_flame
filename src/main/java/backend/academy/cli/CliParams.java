@@ -76,7 +76,7 @@ public class CliParams {
      * The number of threads in the case of image generation in multithreaded mode
      */
     @Parameter(names = "--multi-threads", validateWith = PositiveNumberValidator.class)
-    private int threadsNumber;
+    private int threadsNumber = 1;
 
     /**
      * The file format of the generated image

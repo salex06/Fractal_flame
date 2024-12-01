@@ -297,6 +297,18 @@ class CliParamsTest {
         assertThat(cliParams.useOneThread()).isFalse();
     }
 
+    @Test
+    @DisplayName("Ensure threadNumber is 1 by default")
+    void ensureThreadNumberIs1(){
+        String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
+            demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
+            demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
+            demoImageFormat.getKey(), demoImageFormat.getValue()};
+
+        JCommander.newBuilder().addObject(cliParams).build().parse(args);
+        assertEquals(1, cliParams.threadsNumber());
+    }
+
     @ParameterizedTest
     @CsvSource({"--multi-threads, 10", "--multi-threads, 2"})
     @DisplayName("Ensure reading threads number is working correctly")
