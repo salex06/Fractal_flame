@@ -44,23 +44,10 @@ public final class AffineService {
         return new AffineFunction(a, b, c, d, e, f, color);
     }
 
-    public static AffineFunction generateSingleAffineFunction() {
-        SecureRandom secureRandom = new SecureRandom();
-        return generateSingleAffineFunction(secureRandom);
-    }
-
-    public static List<AffineFunction> generateListOfAffineFunctions(int count, SecureRandom random) {
+    public static List<AffineFunction> generateListOfAffineFunctions(int count, SecureRandom secureRandom) {
         List<AffineFunction> affineFunctions = new ArrayList<>(count);
         for (int i = 0; i < count; ++i) {
-            affineFunctions.add(i, generateSingleAffineFunction(random));
-        }
-        return affineFunctions;
-    }
-
-    public static List<AffineFunction> generateListOfAffineFunctions(int count) {
-        List<AffineFunction> affineFunctions = new ArrayList<>(count);
-        for (int i = 0; i < count; ++i) {
-            affineFunctions.add(i, generateSingleAffineFunction());
+            affineFunctions.add(i, generateSingleAffineFunction(secureRandom));
         }
         return affineFunctions;
     }

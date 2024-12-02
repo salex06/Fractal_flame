@@ -10,6 +10,7 @@ import backend.academy.transformations.affine.AffineService;
 import backend.academy.transformations.variations.Variation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Color;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +33,7 @@ public class Renderer {
         int threadsNumber
     ) {
         ImageProcessor gammaCorrection = new GammaCorrection();
-        List<AffineFunction> functions = AffineService.generateListOfAffineFunctions(countAffines);
+        List<AffineFunction> functions = AffineService.generateListOfAffineFunctions(countAffines, new SecureRandom());
         try (ExecutorService executorService = Executors.newFixedThreadPool(threadsNumber)) {
             for (int num = 0; num < samples; ++num) {
                 executorService.execute(
