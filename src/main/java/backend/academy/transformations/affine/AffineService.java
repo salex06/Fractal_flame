@@ -10,10 +10,19 @@ import static backend.academy.transformations.affine.AffineFunction.MAX_COEFF_TR
 import static backend.academy.transformations.affine.AffineFunction.MIN_COEFF;
 import static backend.academy.transformations.affine.AffineFunction.MIN_COEFF_TRANSLATION;
 
+/**
+ * Service for working with the affine function model
+ */
 public final class AffineService {
     private AffineService() {
     }
 
+    /**
+     * Generates an affine function
+     *
+     * @param secureRandom randomizer
+     * @return affine function
+     */
     public static AffineFunction generateSingleAffineFunction(SecureRandom secureRandom) {
         double a;
         double b;
@@ -44,6 +53,13 @@ public final class AffineService {
         return new AffineFunction(a, b, c, d, e, f, color);
     }
 
+    /**
+     * Returns list of the affine functions
+     *
+     * @param count        affine functions number
+     * @param secureRandom randomizer for generating coefficients
+     * @return list of the affine functions
+     */
     public static List<AffineFunction> generateListOfAffineFunctions(int count, SecureRandom secureRandom) {
         List<AffineFunction> affineFunctions = new ArrayList<>(count);
         for (int i = 0; i < count; ++i) {
