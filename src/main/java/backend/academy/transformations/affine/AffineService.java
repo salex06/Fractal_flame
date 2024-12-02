@@ -5,12 +5,15 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import static backend.academy.transformations.affine.AffineFunction.COLOR_LIMIT;
+import static backend.academy.transformations.affine.AffineFunction.MAX_COEFF;
+import static backend.academy.transformations.affine.AffineFunction.MAX_COEFF_TRANSLATION;
+import static backend.academy.transformations.affine.AffineFunction.MIN_COEFF;
+import static backend.academy.transformations.affine.AffineFunction.MIN_COEFF_TRANSLATION;
 
 public final class AffineService {
     private AffineService() {
     }
 
-    @SuppressWarnings("MagicNumber")
     public static AffineFunction generateSingleAffineFunction(SecureRandom secureRandom) {
         double a;
         double b;
@@ -20,17 +23,17 @@ public final class AffineService {
         double f;
         do {
             do {
-                a = secureRandom.nextDouble(-1, 1);
-                d = secureRandom.nextDouble(-1, 1);
+                a = secureRandom.nextDouble(MIN_COEFF, MAX_COEFF);
+                d = secureRandom.nextDouble(MIN_COEFF, MAX_COEFF);
             } while ((a * a + d * d) > 1);
             do {
-                b = secureRandom.nextDouble(-1, 1);
-                e = secureRandom.nextDouble(-1, 1);
+                b = secureRandom.nextDouble(MIN_COEFF, MAX_COEFF);
+                e = secureRandom.nextDouble(MIN_COEFF, MAX_COEFF);
             } while ((b * b + e * e) > 1);
         } while ((a * a + b * b + d * d + e * e) > (1 + (a * e - d * b) * (a * e - d * b)));
 
-        c = secureRandom.nextDouble(-2, 2);
-        f = secureRandom.nextDouble(-2, 2);
+        c = secureRandom.nextDouble(MIN_COEFF_TRANSLATION, MAX_COEFF_TRANSLATION);
+        f = secureRandom.nextDouble(MIN_COEFF_TRANSLATION, MAX_COEFF_TRANSLATION);
 
         Color color = new Color(
             secureRandom.nextInt(COLOR_LIMIT),
