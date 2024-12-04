@@ -2,9 +2,12 @@ package backend.academy.utils;
 
 import backend.academy.format.ImageFormat;
 import backend.academy.image.FractalImage;
+import backend.academy.image.ImageGenerationConfig;
 import backend.academy.image.Pixel;
+import backend.academy.utils.impl.IOHandlerImpl;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
@@ -20,6 +24,7 @@ import static backend.academy.format.ImageFormat.BMP;
 import static backend.academy.format.ImageFormat.PNG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ImageUtilsTest {
     private static final Path OUTPUT_PNG = Path.of(
@@ -73,11 +78,11 @@ class ImageUtilsTest {
             }
         }
         FractalImage mockedImage = mock(FractalImage.class);
-        Mockito.when(mockedImage.width()).thenReturn(width);
-        Mockito.when(mockedImage.height()).thenReturn(height);
+        when(mockedImage.width()).thenReturn(width);
+        when(mockedImage.height()).thenReturn(height);
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                Mockito.when(mockedImage.pixel(i, j)).thenReturn(pixels[i][j]);
+                when(mockedImage.pixel(i, j)).thenReturn(pixels[i][j]);
             }
         }
 
@@ -94,4 +99,33 @@ class ImageUtilsTest {
         }
     }
 
+    @Test
+    @DisplayName("Ensure saveData method works")
+    void ensureSaveDataMethodWorks() throws IOException {
+        ByteArrayOutputStream arr = new ByteArrayOutputStream();
+        IOHandler fileHandler = new IOHandlerImpl(System.in, arr);
+        ImageGenerationConfig config = Mockito.mock(ImageGenerationConfig.class);
+        when(config.getConfig()).thenReturn("Config\n");
+        when(config.imageFormat()).thenReturn(PNG);
+        int expectedWidth = 2;
+        int expectedHeight = 2;
+        FractalImage image = new FractalImage(expectedHeight, expectedWidth);
+        String imagePath = OUTPUT_PNG.toString();
+        long elapsedTime = 10;
+        Color expectedColor = Color.BLACK;
+        String expectedLogFile = """
+            Config
+            Затраченное время (в секундах): 10
+            """;
+
+        ImageUtils.saveData(fileHandler, config, image, imagePath, elapsedTime);
+
+        assertEquals(expectedLogFile, arr.toString());
+        BufferedImage actual = ImageIO.read(OUTPUT_PNG.toFile());
+        for (int i = 0; i < expectedHeight; ++i) {
+            for (int j = 0; j < expectedWidth; ++j) {
+                assertEquals(expectedColor.getRGB(), actual.getRGB(j, i));
+            }
+        }
+    }
 }
