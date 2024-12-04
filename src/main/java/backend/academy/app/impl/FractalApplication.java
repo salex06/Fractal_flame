@@ -36,30 +36,21 @@ public class FractalApplication implements Application {
         int itersPerSample = cliParams.iterPerSample();
         int symmetry = cliParams.symmetry();
         ImageFormat format = cliParams.imageFormat();
-        int threadNumber = cliParams.threadsNumber();
+        int threadNumber = (cliParams.useOneThread() ? 1 : cliParams.threadsNumber());
 
-        if (cliParams.useOneThread()) {
-            ImageGenerationConfig config =
-                new ImageGenerationConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample,
-                    symmetry,
-                    format, 1);
-            processGeneration(new FractalImage(height, width), 1, config);
-        }
-        if (cliParams.threadsNumber() > 1) {
-            ImageGenerationConfig config =
-                new ImageGenerationConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample,
-                    symmetry,
-                    format, threadNumber);
-            processGeneration(new FractalImage(height, width), threadNumber, config);
-        }
+        ImageGenerationConfig config =
+            new ImageGenerationConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample,
+                symmetry,
+                format, threadNumber);
+
+        processGeneration(new FractalImage(height, width), config);
     }
 
     private void processGeneration(
         FractalImage fractalImage,
-        int threadNumber,
         ImageGenerationConfig config
     ) throws IOException {
-        ioHandler.write("Генерация изображения начата... [Количество потоков: " + threadNumber + "]\n");
+        ioHandler.write("Генерация изображения начата... [Количество потоков: " + config.threadNumber() + "]\n");
         long start = System.nanoTime();
         FractalImage image = renderer.render(
             config.affinesCount(),
@@ -68,7 +59,7 @@ public class FractalApplication implements Application {
             config.samples(),
             config.iterPerSample(),
             config.symmetry(),
-            threadNumber
+            config.threadNumber()
         );
         long elapsedTime = System.nanoTime() - start;
 
