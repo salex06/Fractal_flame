@@ -57,7 +57,7 @@ class ImageUtilsTest {
     @ParameterizedTest
     @MethodSource("getData")
     @DisplayName("Ensure saving images works correctly")
-    void ensureSaveWorksCorrectly(Map.Entry<Map.Entry<Integer, Integer>, Map.Entry<ImageFormat, Path>> curr)
+    void ensureSaveImageWorksCorrectly(Map.Entry<Map.Entry<Integer, Integer>, Map.Entry<ImageFormat, Path>> curr)
         throws IOException {
         //Given
         int width = curr.getKey().getKey();
@@ -82,7 +82,7 @@ class ImageUtilsTest {
         }
 
         //When
-        ImageUtils.save(mockedImage, path, format);
+        ImageUtils.saveImage(mockedImage, path, format);
 
         //Then
         BufferedImage image = ImageIO.read(path.toFile());
@@ -93,4 +93,5 @@ class ImageUtilsTest {
             }
         }
     }
+
 }
