@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import static backend.academy.utils.ImageUtils.PATH_TO_ROOT_DIR;
 
 @SuppressFBWarnings("PATH_TRAVERSAL_IN")
@@ -36,6 +37,20 @@ public class FractalApplication implements Application {
         CliParams cliParams = new CliParams();
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
+        ImageGenerationConfig config = fromCLItoConfig(cliParams);
+
+        ioHandler.write("Генерация изображения начата... [Количество потоков: " + config.threadNumber() + "]\n");
+
+        Map.Entry<FractalImage, Long> renderData = processRendering(config);
+        FractalImage image = renderData.getKey();
+        long elapsedTimeInSeconds = renderData.getValue();
+
+        processSavingData(config, image, elapsedTimeInSeconds);
+
+        ioHandler.write("Генерация изображения завершена!\n");
+    }
+
+    private ImageGenerationConfig fromCLItoConfig(CliParams cliParams) {
         int width = cliParams.width();
         int height = cliParams.height();
         int affinesNumber = cliParams.affinesNumber();
@@ -46,17 +61,17 @@ public class FractalApplication implements Application {
         ImageFormat format = cliParams.imageFormat();
         int threadNumber = (cliParams.useOneThread() ? 1 : cliParams.threadsNumber());
 
-        ImageGenerationConfig config = new ImageGenerationConfig(
+        return new ImageGenerationConfig(
             width, height, affinesNumber, variations, samples, (short) itersPerSample, symmetry,
             format, threadNumber
         );
+    }
 
-        ioHandler.write("Генерация изображения начата... [Количество потоков: " + config.threadNumber() + "]\n");
-
+    private Map.Entry<FractalImage, Long> processRendering(ImageGenerationConfig config) {
         long start = System.nanoTime();
         FractalImage image = renderer.render(
             config.affinesCount(),
-            new FractalImage(height, width),
+            new FractalImage(config.height(), config.width()),
             config.variationList(),
             config.samples(),
             config.iterPerSample(),
@@ -64,7 +79,12 @@ public class FractalApplication implements Application {
             config.threadNumber()
         );
         long elapsedTimeInSeconds = (System.nanoTime() - start) / NANOSECONDS_IN_SECOND;
+        return Map.entry(image, elapsedTimeInSeconds);
+    }
 
+
+    private void processSavingData(ImageGenerationConfig config, FractalImage image, long elapsedTimeInSeconds)
+        throws IOException {
         File dir =
             new File(PATH_TO_ROOT_DIR,
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss")));
@@ -77,9 +97,7 @@ public class FractalApplication implements Application {
         IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
 
         ImageUtils.saveData(fileHandler, config, image, imagePath, elapsedTimeInSeconds);
-
-        ioHandler.write("Генерация изображения завершена!\n");
     }
 
-    public static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
+    private static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
 }
