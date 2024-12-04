@@ -11,9 +11,17 @@ import backend.academy.utils.IOHandler;
 import backend.academy.utils.ImageUtils;
 import backend.academy.utils.impl.IOHandlerImpl;
 import com.beust.jcommander.JCommander;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import static backend.academy.utils.ImageUtils.PATH_TO_ROOT_DIR;
 
+@SuppressFBWarnings("PATH_TRAVERSAL_IN")
 public class FractalApplication implements Application {
     private final IOHandler ioHandler;
     private final Renderer renderer;
@@ -38,32 +46,40 @@ public class FractalApplication implements Application {
         ImageFormat format = cliParams.imageFormat();
         int threadNumber = (cliParams.useOneThread() ? 1 : cliParams.threadsNumber());
 
-        ImageGenerationConfig config =
-            new ImageGenerationConfig(width, height, affinesNumber, variations, samples, (short) itersPerSample,
-                symmetry,
-                format, threadNumber);
+        ImageGenerationConfig config = new ImageGenerationConfig(
+            width, height, affinesNumber, variations, samples, (short) itersPerSample, symmetry,
+            format, threadNumber
+        );
 
-        processGeneration(new FractalImage(height, width), config);
-    }
-
-    private void processGeneration(
-        FractalImage fractalImage,
-        ImageGenerationConfig config
-    ) throws IOException {
         ioHandler.write("Генерация изображения начата... [Количество потоков: " + config.threadNumber() + "]\n");
+
         long start = System.nanoTime();
         FractalImage image = renderer.render(
             config.affinesCount(),
-            new FractalImage(fractalImage.height(), fractalImage.width()),
+            new FractalImage(height, width),
             config.variationList(),
             config.samples(),
             config.iterPerSample(),
             config.symmetry(),
             config.threadNumber()
         );
-        long elapsedTime = System.nanoTime() - start;
+        long elapsedTimeInSeconds = (System.nanoTime() - start) / NANOSECONDS_IN_SECOND;
 
-        ImageUtils.saveData(image, config, elapsedTime);
+        File dir =
+            new File(PATH_TO_ROOT_DIR,
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss")));
+        if (!dir.mkdir()) {
+            throw new IOException("Ошибка создания директории");
+        }
+
+        String logPath = dir + "/info.log";
+        String imagePath = dir + "/image." + config.imageFormat().name().toLowerCase();
+        IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
+
+        ImageUtils.saveData(fileHandler, config, image, imagePath, elapsedTimeInSeconds);
+
         ioHandler.write("Генерация изображения завершена!\n");
     }
+
+    public static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
 }

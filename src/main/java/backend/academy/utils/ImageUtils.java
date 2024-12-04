@@ -4,15 +4,9 @@ import backend.academy.format.ImageFormat;
 import backend.academy.image.FractalImage;
 import backend.academy.image.ImageGenerationConfig;
 import backend.academy.image.Pixel;
-import backend.academy.utils.impl.IOHandlerImpl;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import static backend.academy.format.ImageFormat.PNG;
@@ -53,23 +47,17 @@ public final class ImageUtils {
         ImageIO.write(img, format.name().toLowerCase(Locale.ROOT), filename.toFile());
     }
 
-    @SuppressFBWarnings({"PATH_TRAVERSAL_IN", "PATH_TRAVERSAL_OUT"})
-    public static void saveData(FractalImage image, ImageGenerationConfig config, long elapsedTime) throws IOException {
-        File dir =
-            new File(PATH_TO_ROOT_DIR,
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-LL-yyyy_HHmmss")));
-        if (!dir.mkdir()) {
-            throw new IOException("Ошибка создания директории");
-        }
-        String logPath = dir + "/info.log";
-        IOHandler fileHandler = new IOHandlerImpl(System.in, Files.newOutputStream(Path.of(logPath)));
+    public static void saveData(
+        IOHandler fileHandler,
+        ImageGenerationConfig config,
+        FractalImage image,
+        String imagePath,
+        long elapsedTime
+    ) throws IOException {
         fileHandler.write(config.getConfig());
-        fileHandler.write("Затраченное время (в секундах): " + elapsedTime / NANOSECONDS_IN_SECOND + '\n');
-
-        String imagePath = dir + "/image." + config.imageFormat().name().toLowerCase();
+        fileHandler.write("Затраченное время (в секундах): " + elapsedTime + '\n');
         ImageUtils.saveImage(image, Path.of(imagePath), config.imageFormat());
     }
 
-    private static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
-    private static final String PATH_TO_ROOT_DIR = "src/main/resources/";
+    public static final String PATH_TO_ROOT_DIR = "src/main/resources/";
 }
