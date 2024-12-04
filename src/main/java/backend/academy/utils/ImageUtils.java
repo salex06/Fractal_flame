@@ -33,7 +33,7 @@ public final class ImageUtils {
      * @param format   file format (jpeg, png, bmp, etc.)
      * @throws IOException in case of errors writing to the file
      */
-    public static void save(FractalImage image, Path filename, ImageFormat format) throws IOException {
+    public static void saveImage(FractalImage image, Path filename, ImageFormat format) throws IOException {
         int type = BufferedImage.TYPE_4BYTE_ABGR;
         if (format != PNG) {
             type = BufferedImage.TYPE_3BYTE_BGR;
@@ -67,7 +67,7 @@ public final class ImageUtils {
         fileHandler.write("Затраченное время (в секундах): " + elapsedTime / NANOSECONDS_IN_SECOND + '\n');
 
         String imagePath = dir + "/image." + config.imageFormat().name().toLowerCase();
-        ImageUtils.save(image, Path.of(imagePath), config.imageFormat());
+        ImageUtils.saveImage(image, Path.of(imagePath), config.imageFormat());
     }
 
     private static final long NANOSECONDS_IN_SECOND = 1_000_000_000;
