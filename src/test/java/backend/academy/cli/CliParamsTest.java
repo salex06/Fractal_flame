@@ -41,7 +41,9 @@ class CliParamsTest {
     void ensureReadingWidthIsWorkingCorrectly(String width, String widthVal, String height, String heightVal) {
         String[] args = new String[] {width, widthVal, height, heightVal,
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()
+        };
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         assertEquals(Integer.parseInt(widthVal), cliParams.width());
@@ -54,7 +56,8 @@ class CliParamsTest {
     void ensureReadingIncorrectWidthThrowsException(String fl, String val) {
         String[] args = new String[] {fl, val, demoHeight.getKey(), demoHeight.getValue(),
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -66,7 +69,8 @@ class CliParamsTest {
     void ensureReadingIncorrectHeightThrowsException(String fl, String val) {
         String[] args = new String[] {fl, val, demoWidth.getKey(), demoWidth.getValue(),
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -77,7 +81,8 @@ class CliParamsTest {
     void ensureAbsenceWidthCausesException() {
         String[] args = new String[] {demoHeight.getKey(), demoHeight.getValue(),
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -88,7 +93,8 @@ class CliParamsTest {
     void ensureAbsenceHeightCausesException() {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(),
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -101,7 +107,8 @@ class CliParamsTest {
         String[] args = new String[] {flag, val, demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey(),
+            demoMultiThreads.getValue()};
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         assertEquals(Integer.parseInt(val), cliParams.affinesNumber());
@@ -114,7 +121,8 @@ class CliParamsTest {
         String[] args = new String[] {flag, val, demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -126,7 +134,8 @@ class CliParamsTest {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         assertEquals(CliParams.DEFAULT_AFFINES_NUMBER(), cliParams.affinesNumber());
@@ -140,7 +149,8 @@ class CliParamsTest {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), flag, val,
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         List<Variation> expected = List.of(new DiscVariation(), new SwirlVariation());
@@ -160,7 +170,8 @@ class CliParamsTest {
                 demoHeight.getKey(),
                 demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
                 demoIterPerSample.getValue(), flag, val,
-                demoImageFormat.getKey(), demoImageFormat.getValue()};
+                demoImageFormat.getKey(), demoImageFormat.getValue(),
+                demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -171,7 +182,8 @@ class CliParamsTest {
     void ensureAbsenceVariationsCausesException() {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(),
             demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(), demoIterPerSample.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(),
+            demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -186,7 +198,7 @@ class CliParamsTest {
             new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(), demoHeight.getValue(),
                 sample, sampleVal, iter, iterVal,
                 demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(),
-                demoImageFormat.getValue()};
+                demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue()};
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         assertEquals(Integer.parseInt(sampleVal), cliParams.samplesNumber());
@@ -201,7 +213,7 @@ class CliParamsTest {
             new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(), demoHeight.getValue(),
                 fl, val, demoIterPerSample.getKey(), demoIterPerSample.getValue(),
                 demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(),
-                demoImageFormat.getValue()};
+                demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -215,7 +227,7 @@ class CliParamsTest {
             new String[] {demoHeight.getKey(), demoHeight.getValue(), demoWidth.getKey(), demoWidth.getValue(),
                 demoSamples.getKey(), demoSamples.getValue(), fl, val,
                 demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(),
-                demoImageFormat.getValue()};
+                demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -228,7 +240,7 @@ class CliParamsTest {
             new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(), demoHeight.getValue(),
                 demoIterPerSample.getKey(), demoIterPerSample.getValue(),
                 demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(),
-                demoImageFormat.getValue()};
+                demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -241,7 +253,7 @@ class CliParamsTest {
             new String[] {demoHeight.getKey(), demoHeight.getValue(), demoWidth.getKey(), demoWidth.getValue(),
                 demoSamples.getKey(), demoSamples.getValue(),
                 demoVariations.getKey(), demoVariations.getValue(), demoImageFormat.getKey(),
-                demoImageFormat.getValue()};
+                demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue()};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -254,7 +266,8 @@ class CliParamsTest {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue(), flag, val};
+            demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey(),
+            demoMultiThreads.getValue(), flag, val};
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
 
         assertEquals(Integer.parseInt(val), cliParams.symmetry());
@@ -267,7 +280,8 @@ class CliParamsTest {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue(), flag, val};
+            demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey(),
+            demoMultiThreads.getValue(), flag, val};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
@@ -291,22 +305,11 @@ class CliParamsTest {
         String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
+            demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey(),
+            demoMultiThreads.getValue()};
 
         JCommander.newBuilder().addObject(cliParams).build().parse(args);
         assertThat(cliParams.useOneThread()).isFalse();
-    }
-
-    @Test
-    @DisplayName("Ensure threadNumber is 1 by default")
-    void ensureThreadNumberIs1(){
-        String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
-            demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
-            demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
-            demoImageFormat.getKey(), demoImageFormat.getValue()};
-
-        JCommander.newBuilder().addObject(cliParams).build().parse(args);
-        assertEquals(1, cliParams.threadsNumber());
     }
 
     @ParameterizedTest
@@ -438,6 +441,31 @@ class CliParamsTest {
             demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
             demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
             demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey()};
+
+        assertThrows(ParameterException.class,
+            () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
+    }
+
+    @Test
+    @DisplayName("Ensure ValidateUsingTreads throws Parameter Exception if no passed modes")
+    void ensureValidateUsingThreadsWorksIfNoModes() {
+        String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
+            demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
+            demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
+            demoImageFormat.getKey(), demoImageFormat.getValue()};
+
+        assertThrows(ParameterException.class,
+            () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));
+    }
+
+    @Test
+    @DisplayName("Ensure ValidateUsingTreads throws Parameter Exception if if two modes are passed at once")
+    void ensureValidateUsingThreadsWorksIfBothModes() {
+        String[] args = new String[] {demoWidth.getKey(), demoWidth.getValue(), demoHeight.getKey(),
+            demoHeight.getValue(), demoSamples.getKey(), demoSamples.getValue(), demoIterPerSample.getKey(),
+            demoIterPerSample.getValue(), demoVariations.getKey(), demoVariations.getValue(),
+            demoImageFormat.getKey(), demoImageFormat.getValue(), demoMultiThreads.getKey(), demoMultiThreads.getValue(),
+        "--one-thread"};
 
         assertThrows(ParameterException.class,
             () -> JCommander.newBuilder().addObject(cliParams).build().parse(args));

@@ -4,10 +4,13 @@ import backend.academy.format.ImageFormat;
 import backend.academy.transformations.variations.Variation;
 import backend.academy.transformations.variations.VariationService;
 import com.beust.jcommander.IParameterValidator;
+import com.beust.jcommander.IParametersValidator;
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 
 /**
@@ -15,6 +18,7 @@ import lombok.Getter;
  * necessary flags and parameters for user input
  */
 @Getter
+@Parameters(parametersValidators = CliParams.ValidateUsingTreads.class)
 public class CliParams {
     /**
      * The width of the generated image
@@ -76,7 +80,7 @@ public class CliParams {
      * The number of threads in the case of image generation in multithreaded mode
      */
     @Parameter(names = "--multi-threads", validateWith = PositiveNumberValidator.class)
-    private int threadsNumber = 1;
+    private int threadsNumber;
 
     /**
      * The file format of the generated image
@@ -154,6 +158,31 @@ public class CliParams {
             } catch (IllegalArgumentException e) {
                 throw new ParameterException("No such format: " + s + '\n'
                     + "Available formats: " + '\n' + ImageFormat.getImageFormatsAsStrings(), e);
+            }
+        }
+    }
+
+    /**
+     * Validator for checking the use of only one mode
+     * (single-threaded or multithreaded)
+     */
+    public static class ValidateUsingTreads implements IParametersValidator {
+        /**
+         * Checks the use of only one mode
+         *
+         * @param map parameter map
+         */
+        @Override
+        public void validate(Map<String, Object> map) throws ParameterException {
+            String oneThread = "--one-thread";
+            String multiThreads = "--multi-threads";
+            if (map.get(oneThread) != null && map.get(multiThreads) != null) {
+                throw new ParameterException(
+                    "It's possible to use only one mode (--one-thread or --multi-threads) within a single run");
+            } else if (map.get(oneThread) == null && map.get(multiThreads) == null) {
+                throw new ParameterException(
+                    "Mode selection is expected (--one-thread or --multi-threads)"
+                );
             }
         }
     }
