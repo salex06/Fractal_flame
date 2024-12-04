@@ -47,6 +47,16 @@ public final class ImageUtils {
         ImageIO.write(img, format.name().toLowerCase(Locale.ROOT), filename.toFile());
     }
 
+    /**
+     * Saves the log file created based on the config, and the generated image
+     *
+     * @param fileHandler output stream to a file (for log file)
+     * @param config      the image configuration
+     * @param image       the generated image
+     * @param imagePath   the path to the image
+     * @param elapsedTime image generation time
+     * @throws IOException if any i/o errors occur
+     */
     public static void saveData(
         IOHandler fileHandler,
         ImageGenerationConfig config,
@@ -59,5 +69,8 @@ public final class ImageUtils {
         ImageUtils.saveImage(image, Path.of(imagePath), config.imageFormat());
     }
 
+    /**
+     * The default path to the root directory
+     */
     public static final String PATH_TO_ROOT_DIR = "src/main/resources/";
 }
