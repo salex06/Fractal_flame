@@ -6,7 +6,17 @@ import java.awt.Color;
 import static java.lang.Math.log10;
 import static java.lang.Math.pow;
 
+/**
+ * The class implements gamma correction, which
+ * removes noise from the image and aligns the color
+ * palette of the image
+ */
 public class GammaCorrection implements ImageProcessor {
+    /**
+     * Process the gamma correction
+     *
+     * @param image the image that needs to be processed
+     */
     @Override
     public void process(FractalImage image) {
         int xRes = image.width();
