@@ -1,6 +1,7 @@
 package backend.academy.render;
 
 import backend.academy.image.FractalImage;
+import backend.academy.image.ImageGenerationConfig;
 import backend.academy.image.Pixel;
 import backend.academy.processing.GammaCorrection;
 import backend.academy.processing.ImageProcessor;
@@ -21,20 +22,17 @@ import static java.lang.Math.sin;
 
 public class Renderer {
     public FractalImage render(
-        int countAffines,
         FractalImage canvas,
-        List<Variation> variations,
-        int samples,
-        short iterPerSample,
-        int symmetry,
-        int threadsNumber
+        ImageGenerationConfig config
     ) {
         ImageProcessor gammaCorrection = new GammaCorrection();
-        List<AffineFunction> functions = AffineService.generateListOfAffineFunctions(countAffines, new SecureRandom());
-        try (ExecutorService executorService = Executors.newFixedThreadPool(threadsNumber)) {
-            for (int num = 0; num < samples; ++num) {
+        List<AffineFunction> functions =
+            AffineService.generateListOfAffineFunctions(config.affinesCount(), new SecureRandom());
+        try (ExecutorService executorService = Executors.newFixedThreadPool(config.threadNumber())) {
+            for (int num = 0; num < config.samples(); ++num) {
                 executorService.execute(
-                    () -> processSample(iterPerSample, variations, functions, countAffines, symmetry, canvas));
+                    () -> processSample(config.iterPerSample(), config.variationList(), functions,
+                        config.affinesCount(), config.symmetry(), canvas));
             }
         }
         gammaCorrection.process(canvas);

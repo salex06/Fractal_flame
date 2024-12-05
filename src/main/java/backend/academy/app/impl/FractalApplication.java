@@ -79,13 +79,8 @@ public class FractalApplication implements Application {
     private Map.Entry<FractalImage, Long> processRendering(ImageGenerationConfig config) {
         long start = System.nanoTime();
         FractalImage image = renderer.render(
-            config.affinesCount(),
             new FractalImage(config.height(), config.width()),
-            config.variationList(),
-            config.samples(),
-            config.iterPerSample(),
-            config.symmetry(),
-            config.threadNumber()
+            config
         );
         long elapsedTimeInSeconds = (System.nanoTime() - start) / NANOSECONDS_IN_SECOND;
         return Map.entry(image, elapsedTimeInSeconds);
