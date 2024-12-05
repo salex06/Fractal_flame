@@ -22,11 +22,20 @@ import java.util.List;
 import java.util.Map;
 import static backend.academy.utils.ImageUtils.PATH_TO_ROOT_DIR;
 
+/**
+ * The class represents an application
+ * for generating fractal images
+ */
 @SuppressFBWarnings("PATH_TRAVERSAL_IN")
 public class FractalApplication implements Application {
     private final IOHandler ioHandler;
     private final Renderer renderer;
 
+    /**
+     * The default constructor which defines
+     * objects of the IOHandler and Renderer
+     * classes
+     */
     public FractalApplication() {
         ioHandler = new IOHandlerImpl();
         renderer = new Renderer();
