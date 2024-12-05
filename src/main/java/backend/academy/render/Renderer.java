@@ -20,7 +20,19 @@ import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
+/**
+ * The class is used to perform generating
+ * a fractal image
+ */
 public class Renderer {
+    /**
+     * Generates a fractal image and processes it with
+     * gammaCorrection
+     *
+     * @param canvas "a blank canvas" on which the image will be applied
+     * @param config image generation configuration
+     * @return the generated fractal image
+     */
     public FractalImage render(
         FractalImage canvas,
         ImageGenerationConfig config
