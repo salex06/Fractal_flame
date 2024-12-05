@@ -15,10 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
-import static backend.academy.image.FractalImage.XMAX_COEFF;
-import static backend.academy.image.FractalImage.XMIN_COEFF;
-import static backend.academy.image.FractalImage.YMAX_COEFF;
-import static backend.academy.image.FractalImage.YMIN_COEFF;
+import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
@@ -53,10 +50,16 @@ public class Renderer {
         int symmetry,
         FractalImage canvas
     ) {
+        double xMaxCoeff = (canvas.width() < canvas.height() ? 1.0 : (double) canvas.width() / canvas.height());
+        double xMinCoeff = -xMaxCoeff;
+
+        double yMaxCoeff = (abs(xMaxCoeff - 1.0) > EPS ? 1.0 : (double) canvas.height() / canvas.width());
+        double yMinCoeff = -yMaxCoeff;
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Point pw = new Point(
-            random.nextDouble(XMIN_COEFF, XMAX_COEFF),
-            random.nextDouble(YMIN_COEFF, YMAX_COEFF)
+            random.nextDouble(xMinCoeff, xMaxCoeff),
+            random.nextDouble(yMinCoeff, yMaxCoeff)
         ); //получаем стартовую точку
 
         for (short step = START_ITERATIONS; step < iterPerSample - START_ITERATIONS; ++step) {
@@ -75,11 +78,11 @@ public class Renderer {
                     theta += ((2 * Math.PI) / symmetry);
                     double xRot = pw.x() * cos(theta) - pw.y() * sin(theta);
                     double yRot = pw.x() * sin(theta) + pw.y() * cos(theta);
-                    if (xRot >= XMIN_COEFF && xRot <= XMAX_COEFF && yRot >= YMIN_COEFF && yRot <= YMAX_COEFF) {
+                    if (xRot >= xMinCoeff && xRot <= xMaxCoeff && yRot >= yMinCoeff && yRot <= yMaxCoeff) {
                         int x1 = canvas.width()
-                            - (int) (((XMAX_COEFF - xRot) / (XMAX_COEFF - XMIN_COEFF)) * canvas.width());
+                            - (int) (((xMaxCoeff - xRot) / (xMaxCoeff - xMinCoeff)) * canvas.width());
                         int y1 = canvas.height()
-                            - (int) (((YMAX_COEFF - yRot) / (YMAX_COEFF - YMIN_COEFF)) * canvas.height());
+                            - (int) (((yMaxCoeff - yRot) / (yMaxCoeff - yMinCoeff)) * canvas.height());
 
                         if (canvas.contains(x1, y1)) {
                             Pixel pix = canvas.pixel(y1, x1);
@@ -110,4 +113,5 @@ public class Renderer {
     }
 
     private static final int START_ITERATIONS = -20;
+    private static final double EPS = 1e-6;
 }

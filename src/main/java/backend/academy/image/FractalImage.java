@@ -82,10 +82,4 @@ public class FractalImage {
         }
         data[row][col] = pixel;
     }
-
-    public static final double XMIN_COEFF = -1.777;
-    public static final double XMAX_COEFF = 1.777;
-
-    public static final double YMIN_COEFF = -1.0;
-    public static final double YMAX_COEFF = 1.0;
 }
